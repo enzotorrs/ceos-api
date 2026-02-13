@@ -31,7 +31,6 @@ export class Asset extends Model {
   @Column({
     type: DataType.INTEGER,
     field: 'parent_asset_id',
-    allowNull: false,
   })
   parentAssetId: number;
 
