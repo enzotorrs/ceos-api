@@ -11,13 +11,13 @@ export class AssetService {
     private readonly assetRepository: typeof Asset,
   ) {}
 
-  async getAll() {
+  async getAll(): Promise<Asset[]> {
     return this.assetRepository.findAll({
       include: ['childAssets'],
     });
   }
 
-  async get(assetId: number) {
+  async get(assetId: number): Promise<Asset> {
     const asset = await this.assetRepository.findByPk(assetId, {
       include: ['childAssets'],
     });
@@ -27,13 +27,13 @@ export class AssetService {
     return asset;
   }
 
-  async create(assetPayload: CreateAssetDto) {
+  async create(assetPayload: CreateAssetDto): Promise<Asset> {
     console.log(assetPayload)
     await this.validateAsset(assetPayload)
     return this.assetRepository.create({ ...assetPayload });
   }
 
-  async update(assetId: number, assetPayload: UpdateAssetDto) {
+  async update(assetId: number, assetPayload: UpdateAssetDto): Promise<Asset> {
     await this.validateAsset(assetPayload, assetId)
     const asset = await this.get(assetId);
     await asset.update(assetPayload);
