@@ -1,3 +1,4 @@
+import { BucketModule } from './bucket/bucket.module';
 import { Module } from '@nestjs/common';
 import { AssetModule } from './asset/asset.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -6,6 +7,7 @@ import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
+    BucketModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
