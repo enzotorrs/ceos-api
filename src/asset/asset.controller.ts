@@ -7,6 +7,7 @@ import { Asset } from './asset.model';
 import { ApiDataResponse } from 'src/common/decorators/api-data-response.decorator';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 import { PaginationDTO } from 'src/common/dtos/pagination.dto';
+import { AssetResponseDto } from './dtos/asset_response.dto';
 
 @UseGuards(AuthGuard)
 @Controller('assets')
@@ -19,7 +20,7 @@ export class AssetController {
   }
 
   @Post()
-  @ApiDataResponse(Asset)
+  @ApiDataResponse(AssetResponseDto)
   async create(@Body() assetPayload: CreateAssetDto) {
     return this.assetService.create(assetPayload);
   }

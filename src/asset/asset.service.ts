@@ -4,12 +4,15 @@ import { InjectModel } from '@nestjs/sequelize';
 import { CreateAssetDto } from './dtos/create_asset.dto';
 import { UpdateAssetDto } from './dtos/update_asset.dto';
 import { PaginationDTO } from 'src/common/dtos/pagination.dto';
+import { BucketService } from 'src/bucket/bucket.service';
+import { AssetResponseDto } from './dtos/asset_response.dto';
 
 @Injectable()
 export class AssetService {
   constructor(
     @InjectModel(Asset)
     private readonly assetRepository: typeof Asset,
+    private readonly bucketService: BucketService,
   ) { }
 
   async getAll(pagination: PaginationDTO) {
@@ -43,10 +46,17 @@ export class AssetService {
     return asset;
   }
 
-  async create(assetPayload: CreateAssetDto): Promise<Asset> {
-    console.log(assetPayload)
+  async create(assetPayload: CreateAssetDto): Promise<AssetResponseDto> {
     await this.validateAsset(assetPayload)
-    return this.assetRepository.create({ ...assetPayload });
+    const asset = await this.assetRepository.create({ ...assetPayload });
+    if(assetPayload.folder){
+      return asset
+    }
+    if(!assetPayload.filename){
+      throw new BadRequestException('asset type file must have filename')
+    }
+    const uploadUrl = await this.bucketService.getSignedUploadUrl(assetPayload.filename)
+    return {...asset.dataValues, uploadUrl}
   }
 
   async update(assetId: number, assetPayload: UpdateAssetDto): Promise<Asset> {
@@ -65,6 +75,12 @@ export class AssetService {
     }
     if (assetId && assetPayload.parentAssetId && assetId === assetPayload.parentAssetId) {
       throw new BadRequestException('parentAsset cannot be equal to assetId')
+    }
+    if(assetPayload instanceof CreateAssetDto && assetPayload.folder && assetPayload.filename){
+      throw new BadRequestException('folder cannot have filename')
+    }
+    if(assetPayload instanceof CreateAssetDto && !assetPayload.folder && !assetPayload.filename){
+      throw new BadRequestException('asset type file must have filename')
     }
   }
 }

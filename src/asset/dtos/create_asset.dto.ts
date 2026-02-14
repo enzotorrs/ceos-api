@@ -7,6 +7,10 @@ export class CreateAssetDto {
   name: string;
 
   @ApiProperty()
+  @IsOptional()
+  filename?: string;
+
+  @ApiProperty()
   @IsBoolean()
   folder: boolean = true;
 
