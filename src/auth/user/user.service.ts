@@ -29,7 +29,7 @@ constructor(
 
   async create(userPayload: CreateUserDTO): Promise<UserResponseDTO>{
     const passwordHashed = await bcrypt.hash(userPayload.password, 10)
-    const user = await  this.userRepository.create({username: userPayload.password, password:passwordHashed})
+    const user = await  this.userRepository.create({username: userPayload.username, password:passwordHashed})
     const {password, ...result} = user.get({plain: true})
     return result
   }
