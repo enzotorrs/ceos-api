@@ -3,18 +3,34 @@ import { Asset } from './asset.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateAssetDto } from './dtos/create_asset.dto';
 import { UpdateAssetDto } from './dtos/update_asset.dto';
+import { PaginationDTO } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
 export class AssetService {
   constructor(
     @InjectModel(Asset)
     private readonly assetRepository: typeof Asset,
-  ) {}
+  ) { }
 
-  async getAll(): Promise<Asset[]> {
-    return this.assetRepository.findAll({
-      include: ['childAssets'],
+  async getAll(pagination: PaginationDTO) {
+    const { page, page_size } = pagination;
+    const limit = page_size;
+    const offset = (page - 1) * page_size;
+
+    const { rows: items, count: total } = await this.assetRepository.findAndCountAll({
+      include: ['childAssets', 'parentAsset'],
+      limit,
+      offset,
     });
+
+    return {
+      items,
+      meta: {
+        total,
+        page,
+        lastPage: Math.ceil(total / limit),
+      },
+    };
   }
 
   async get(assetId: number): Promise<Asset> {
@@ -37,17 +53,17 @@ export class AssetService {
     await this.validateAsset(assetPayload, assetId)
     const asset = await this.get(assetId);
     await asset.update(assetPayload);
-    return asset.reload({include: ['childAssets']});
+    return asset.reload({ include: ['childAssets'] });
   }
 
-  private async validateAsset(assetPayload: CreateAssetDto | UpdateAssetDto, assetId?: number){
-    if(assetPayload.parentAssetId){
+  private async validateAsset(assetPayload: CreateAssetDto | UpdateAssetDto, assetId?: number) {
+    if (assetPayload.parentAssetId) {
       const parentAsset = await this.get(assetPayload.parentAssetId)
-      if(parentAsset.folder === false){
+      if (parentAsset.folder === false) {
         throw new BadRequestException('parentAsset must be a folder')
       }
     }
-    if(assetId && assetPayload.parentAssetId && assetId === assetPayload.parentAssetId){
+    if (assetId && assetPayload.parentAssetId && assetId === assetPayload.parentAssetId) {
       throw new BadRequestException('parentAsset cannot be equal to assetId')
     }
   }
