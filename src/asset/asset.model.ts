@@ -20,6 +20,14 @@ export class Asset extends Model {
   })
   name: string;
 
+  @ApiProperty()
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+    unique: false,
+  })
+  filename: string;
+
   @Column({
     type: DataType.BOOLEAN,
     defaultValue: false
