@@ -1,3 +1,5 @@
+import { Reflector } from '@nestjs/core';
+import { TransformInterceptor } from "./common/interceptors/transform.interceptor";
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import {
@@ -14,7 +16,8 @@ async function bootstrap() {
     .setVersion('developing')
     .build();
 
-  app.useGlobalPipes(new ValidationPipe({transform: true}));
+  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.useGlobalInterceptors(new TransformInterceptor(app.get(Reflector)));
 
   const options: SwaggerDocumentOptions = {
     operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
