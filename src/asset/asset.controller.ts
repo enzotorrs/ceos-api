@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { AssetService } from './asset.service';
 import { CreateAssetDto } from './dtos/create_asset.dto';
 import { UpdateAssetDto } from './dtos/update_asset.dto';

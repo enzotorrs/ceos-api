@@ -2,6 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class AssetResponseDto {
   @ApiProperty()
+  id?: number;
+
+  @ApiProperty()
   name: string;
 
   @ApiProperty()
