@@ -8,7 +8,7 @@ import { InjectModel } from '@nestjs/sequelize';
 import { CreateAssetDto } from './dtos/create_asset.dto';
 import { UpdateAssetDto } from './dtos/update_asset.dto';
 import { PaginationDTO } from 'src/common/dtos/pagination.dto';
-import { BucketService } from 'src/bucket/bucket.service';
+import { MediaService } from 'src/media/media.service';
 import { AssetResponseDto } from './dtos/asset_response.dto';
 
 @Injectable()
@@ -16,7 +16,7 @@ export class AssetService {
   constructor(
     @InjectModel(Asset)
     private readonly assetRepository: typeof Asset,
-    private readonly bucketService: BucketService,
+    private readonly mediaService: MediaService,
   ) {}
 
   async getAll(pagination: PaginationDTO) {
@@ -60,7 +60,7 @@ export class AssetService {
     if (!assetPayload.filename) {
       throw new BadRequestException('asset type file must have filename');
     }
-    const uploadUrl = await this.bucketService.getSignedUploadUrl(
+    const uploadUrl = await this.mediaService.getSignedUploadUrl(
       assetPayload.filename,
     );
     return { ...asset.dataValues, uploadUrl };

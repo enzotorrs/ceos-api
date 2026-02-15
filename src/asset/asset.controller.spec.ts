@@ -3,7 +3,7 @@ import { AppModule } from 'src/app.module';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { Asset } from './asset.model';
-import { BucketService } from 'src/bucket/bucket.service';
+import { MediaService } from 'src/media/media.service';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { DatabaseModule } from 'src/database/database.module';
 import { User } from 'src/auth/user/user.model';
@@ -15,10 +15,10 @@ import request from 'supertest';
 describe('AssetController', () => {
   let service: AssetService;
   let sequelize: Sequelize;
-  let bucketService: BucketService;
+  let mediaService: MediaService;
   let app: INestApplication;
 
-  const mockBucketService = {
+  const mockMediaService = {
     getSignedUploadUrl: jest
       .fn()
       .mockResolvedValue('https://mock-upload-url.com/test-file'),
@@ -41,13 +41,13 @@ describe('AssetController', () => {
           logging: false,
         }),
       )
-      .overrideProvider(BucketService)
-      .useValue(mockBucketService)
+      .overrideProvider(MediaService)
+      .useValue(mockMediaService)
       .compile();
 
     service = module.get<AssetService>(AssetService);
     sequelize = module.get<Sequelize>(Sequelize);
-    bucketService = module.get<BucketService>(BucketService);
+    mediaService = module.get<MediaService>(MediaService);
     app = module.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
     app.useGlobalInterceptors(new TransformInterceptor(app.get(Reflector)));
@@ -176,7 +176,7 @@ describe('AssetController', () => {
         expect(body.data.name).toBe('My Folder');
         expect(body.data.folder).toBe(true);
         expect(body.data.uploadUrl).toBeUndefined();
-        expect(bucketService.getSignedUploadUrl).not.toHaveBeenCalled();
+        expect(mediaService.getSignedUploadUrl).not.toHaveBeenCalled();
       });
 
       it('should create a folder with parent folder', async () => {
@@ -266,7 +266,7 @@ describe('AssetController', () => {
         expect(body.data.uploadUrl).toBe(
           'https://mock-upload-url.com/test-file',
         );
-        expect(bucketService.getSignedUploadUrl).toHaveBeenCalledWith(
+        expect(mediaService.getSignedUploadUrl).toHaveBeenCalledWith(
           'myfile.pdf',
         );
       });

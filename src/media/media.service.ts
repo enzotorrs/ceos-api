@@ -12,9 +12,9 @@ import {
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 
 @Injectable()
-export class BucketService {
+export class MediaService {
   private s3Client: S3Client;
-  private readonly logger = new Logger(BucketService.name);
+  private readonly logger = new Logger(MediaService.name);
   private readonly bucketName?: string;
 
   constructor(private readonly configService: ConfigService) {

@@ -1,4 +1,4 @@
-import { BucketModule } from './bucket/bucket.module';
+import { MediaModule } from './media/media.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AssetModule } from './asset/asset.module';
 import { ConfigModule } from '@nestjs/config';
@@ -8,7 +8,7 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware';
 
 @Module({
   imports: [
-    BucketModule,
+    MediaModule,
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: '.env',
