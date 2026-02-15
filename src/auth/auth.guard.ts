@@ -2,6 +2,7 @@ import {
   CanActivate,
   ExecutionContext,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -15,11 +16,12 @@ export class AuthGuard implements CanActivate {
     private configService: ConfigService,
   ) {}
 
+  private readonly logger = new Logger(AuthGuard.name);
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const authEnabled =
       this.configService.get('ENABLE_AUTH', 'true') === 'true';
     if (!authEnabled) {
-      console.warn('auth disabled');
+      this.logger.warn('auth disabled');
       return true;
     }
 
