@@ -1,4 +1,15 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { AssetService } from './asset.service';
 import { CreateAssetDto } from './dtos/create_asset.dto';
 import { UpdateAssetDto } from './dtos/update_asset.dto';
@@ -12,7 +23,7 @@ import { AssetResponseDto } from './dtos/asset_response.dto';
 @UseGuards(AuthGuard)
 @Controller('assets')
 export class AssetController {
-  constructor(private readonly assetService: AssetService) { }
+  constructor(private readonly assetService: AssetService) {}
   @Get()
   @ApiPaginatedResponse(Asset)
   async getAll(@Query() pagination: PaginationDTO) {

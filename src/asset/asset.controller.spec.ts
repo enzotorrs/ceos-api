@@ -4,7 +4,7 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { Sequelize } from 'sequelize-typescript';
 import { Asset } from './asset.model';
 import { BucketService } from 'src/bucket/bucket.service';
-import {  INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { DatabaseModule } from 'src/database/database.module';
 import { User } from 'src/auth/user/user.model';
 import { AssetService } from './asset.service';
@@ -19,8 +19,12 @@ describe('AssetController', () => {
   let app: INestApplication;
 
   const mockBucketService = {
-    getSignedUploadUrl: jest.fn().mockResolvedValue('https://mock-upload-url.com/test-file'),
-    getSignedDownloadUrl: jest.fn().mockResolvedValue('https://mock-download-url.com/test-file'),
+    getSignedUploadUrl: jest
+      .fn()
+      .mockResolvedValue('https://mock-upload-url.com/test-file'),
+    getSignedDownloadUrl: jest
+      .fn()
+      .mockResolvedValue('https://mock-download-url.com/test-file'),
   };
 
   beforeEach(async () => {
@@ -63,10 +67,12 @@ describe('AssetController', () => {
   });
 
   describe('GET /assets', () => {
-    it('should return empty data', async ()=>{
+    it('should return empty data', async () => {
       await request(app.getHttpServer()).get('/assets').expect(200);
-      const res: any = await request(app.getHttpServer()).get('/assets').expect(200);
-      const {body} = res
+      const res: any = await request(app.getHttpServer())
+        .get('/assets')
+        .expect(200);
+      const { body } = res;
 
       expect(body.data).toHaveLength(0);
       expect(body.meta).toEqual({
@@ -74,15 +80,20 @@ describe('AssetController', () => {
         page: 1,
         lastPage: 0,
       });
-    })
+    });
     it('should return paginated assets with default pagination', async () => {
       await service.create({ name: 'Folder 1', folder: true });
       await service.create({ name: 'Folder 2', folder: true });
-      await service.create({ name: 'File 1', folder: false, filename: 'file1.txt' });
+      await service.create({
+        name: 'File 1',
+        folder: false,
+        filename: 'file1.txt',
+      });
 
-      const res: any = await request(app.getHttpServer()).get('/assets').expect(200);
-      const {body} = res
-
+      const res: any = await request(app.getHttpServer())
+        .get('/assets')
+        .expect(200);
+      const { body } = res;
 
       expect(body.data).toHaveLength(3);
       expect(body.meta).toEqual({
@@ -97,8 +108,10 @@ describe('AssetController', () => {
         await service.create({ name: `Folder ${i} `, folder: true });
       }
 
-      const res: any = await request(app.getHttpServer()).get('/assets').expect(200);
-      const {body} = res
+      const res: any = await request(app.getHttpServer())
+        .get('/assets')
+        .expect(200);
+      const { body } = res;
 
       expect(body.data).toHaveLength(5);
       expect(body.meta).toEqual({
@@ -114,9 +127,11 @@ describe('AssetController', () => {
         await service.create({ name: `Folder ${i}`, folder: true });
       }
 
-      const res: any = await request(app.getHttpServer()).get('/assets').query({ page: 2, page_size: 2 }).expect(200);
-      const {body} = res
-
+      const res: any = await request(app.getHttpServer())
+        .get('/assets')
+        .query({ page: 2, page_size: 2 })
+        .expect(200);
+      const { body } = res;
 
       expect(body.data).toHaveLength(2);
       expect(body.data[0].name).toBe('Folder 3');
@@ -124,11 +139,20 @@ describe('AssetController', () => {
     });
 
     it('should include child and parent assets', async () => {
-      const parent = await service.create({ name: 'Parent Folder', folder: true });
-      await service.create({ name: 'Child Folder', folder: true, parentAssetId: parent.id });
+      const parent = await service.create({
+        name: 'Parent Folder',
+        folder: true,
+      });
+      await service.create({
+        name: 'Child Folder',
+        folder: true,
+        parentAssetId: parent.id,
+      });
 
-      const res: any = await request(app.getHttpServer()).get('/assets').expect(200);
-      const {body} = res
+      const res: any = await request(app.getHttpServer())
+        .get('/assets')
+        .expect(200);
+      const { body } = res;
 
       expect(body.data[0].childAssets).toBeDefined();
       expect(body.data[1].parentAsset).toBeDefined();
@@ -143,8 +167,11 @@ describe('AssetController', () => {
           folder: true,
         };
 
-        const res: any = await request(app.getHttpServer()).post('/assets').send(createDto).expect(201);
-        const {body} = res
+        const res: any = await request(app.getHttpServer())
+          .post('/assets')
+          .send(createDto)
+          .expect(201);
+        const { body } = res;
 
         expect(body.data.name).toBe('My Folder');
         expect(body.data.folder).toBe(true);
@@ -153,7 +180,10 @@ describe('AssetController', () => {
       });
 
       it('should create a folder with parent folder', async () => {
-        const parent = await Asset.create({ name: 'Parent Folder', folder: true });
+        const parent = await Asset.create({
+          name: 'Parent Folder',
+          folder: true,
+        });
 
         const createDto = {
           name: 'Child Folder',
@@ -161,8 +191,11 @@ describe('AssetController', () => {
           parentAssetId: parent.id,
         };
 
-        const res: any = await request(app.getHttpServer()).post('/assets').send(createDto).expect(201);
-        const {body} = res
+        const res: any = await request(app.getHttpServer())
+          .post('/assets')
+          .send(createDto)
+          .expect(201);
+        const { body } = res;
 
         expect(body.data.name).toBe('Child Folder');
         expect(body.data.parentAssetId).toBe(parent.id);
@@ -175,11 +208,18 @@ describe('AssetController', () => {
           filename: 'should-not-have.txt',
         };
 
-        const res: any = await request(app.getHttpServer()).post('/assets').send(createDto).expect(400);
+        const res: any = await request(app.getHttpServer())
+          .post('/assets')
+          .send(createDto)
+          .expect(400);
       });
 
       it('should throw error when parent is not a folder', async () => {
-        const fileAsset = await service.create({ name: 'File', folder: false, filename: 'file.txt' });
+        const fileAsset = await service.create({
+          name: 'File',
+          folder: false,
+          filename: 'file.txt',
+        });
 
         const createDto = {
           name: 'Child Folder',
@@ -187,7 +227,10 @@ describe('AssetController', () => {
           parentAssetId: fileAsset.id,
         };
 
-        const res: any = await request(app.getHttpServer()).post('/assets').send(createDto).expect(400);
+        const res: any = await request(app.getHttpServer())
+          .post('/assets')
+          .send(createDto)
+          .expect(400);
       });
 
       it('should throw error when parent does not exist', async () => {
@@ -197,7 +240,10 @@ describe('AssetController', () => {
           parentAssetId: 9999,
         };
 
-        const res: any = await request(app.getHttpServer()).post('/assets').send(createDto).expect(404);
+        const res: any = await request(app.getHttpServer())
+          .post('/assets')
+          .send(createDto)
+          .expect(404);
       });
     });
 
@@ -209,13 +255,20 @@ describe('AssetController', () => {
           filename: 'myfile.pdf',
         };
 
-        const res: any = await request(app.getHttpServer()).post('/assets').send(createDto).expect(201);
-        const {body} = res
+        const res: any = await request(app.getHttpServer())
+          .post('/assets')
+          .send(createDto)
+          .expect(201);
+        const { body } = res;
 
         expect(body.data.name).toBe('My File');
         expect(body.data.folder).toBe(false);
-        expect(body.data.uploadUrl).toBe('https://mock-upload-url.com/test-file');
-        expect(bucketService.getSignedUploadUrl).toHaveBeenCalledWith('myfile.pdf');
+        expect(body.data.uploadUrl).toBe(
+          'https://mock-upload-url.com/test-file',
+        );
+        expect(bucketService.getSignedUploadUrl).toHaveBeenCalledWith(
+          'myfile.pdf',
+        );
       });
 
       it('should throw error when file has no filename', async () => {
@@ -224,11 +277,17 @@ describe('AssetController', () => {
           folder: false,
         };
 
-        const res: any = await request(app.getHttpServer()).post('/assets').send(createDto).expect(400);
+        const res: any = await request(app.getHttpServer())
+          .post('/assets')
+          .send(createDto)
+          .expect(400);
       });
 
       it('should create a file inside a folder', async () => {
-        const parent = await service.create({ name: 'Parent Folder', folder: true });
+        const parent = await service.create({
+          name: 'Parent Folder',
+          folder: true,
+        });
 
         const createDto = {
           name: 'File in Folder',
@@ -237,8 +296,11 @@ describe('AssetController', () => {
           parentAssetId: parent.id,
         };
 
-        const res: any = await request(app.getHttpServer()).post('/assets').send(createDto).expect(201);
-        const {body} = res
+        const res: any = await request(app.getHttpServer())
+          .post('/assets')
+          .send(createDto)
+          .expect(201);
+        const { body } = res;
 
         expect(body.data.name).toBe('File in Folder');
         expect(body.data.parentAssetId).toBe(parent.id);
@@ -249,20 +311,29 @@ describe('AssetController', () => {
 
   describe('PATCH /assets/:id', () => {
     it('should update asset name', async () => {
-      const asset = await service.create({ name: 'Original Name', folder: true });
+      const asset = await service.create({
+        name: 'Original Name',
+        folder: true,
+      });
 
       const updateDto = {
         name: 'Updated Name',
       };
 
-        const res: any = await request(app.getHttpServer()).patch(`/assets/${asset.id}`).send(updateDto).expect(200);
-        const {body} = res
+      const res: any = await request(app.getHttpServer())
+        .patch(`/assets/${asset.id}`)
+        .send(updateDto)
+        .expect(200);
+      const { body } = res;
 
       expect(body.data.name).toBe('Updated Name');
     });
 
     it('should update asset parent', async () => {
-      const parent = await Asset.create({ name: 'Parent Folder', folder: true });
+      const parent = await Asset.create({
+        name: 'Parent Folder',
+        folder: true,
+      });
       const asset = await Asset.create({ name: 'Child Asset', folder: true });
 
       const updateDto = {
@@ -270,8 +341,11 @@ describe('AssetController', () => {
         parentAssetId: parent.id,
       };
 
-        const res: any = await request(app.getHttpServer()).patch(`/assets/${asset.id}`).send(updateDto).expect(200);
-        const {body} = res
+      const res: any = await request(app.getHttpServer())
+        .patch(`/assets/${asset.id}`)
+        .send(updateDto)
+        .expect(200);
+      const { body } = res;
 
       expect(body.data.parentAssetId).toBe(parent.id);
     });
@@ -281,12 +355,19 @@ describe('AssetController', () => {
         name: 'Updated Name',
       };
 
-        const res: any = await request(app.getHttpServer()).patch(`/assets/1`).send(updateDto).expect(404);
-        const {body} = res
+      const res: any = await request(app.getHttpServer())
+        .patch(`/assets/1`)
+        .send(updateDto)
+        .expect(404);
+      const { body } = res;
     });
 
     it('should throw error when parent is not a folder', async () => {
-      const fileAsset = await Asset.create({ name: 'File', folder: false, filename: 'file.txt' });
+      const fileAsset = await Asset.create({
+        name: 'File',
+        folder: false,
+        filename: 'file.txt',
+      });
       const asset = await Asset.create({ name: 'Asset', folder: true });
 
       const updateDto = {
@@ -294,8 +375,11 @@ describe('AssetController', () => {
         parentAssetId: fileAsset.id,
       };
 
-        const res: any = await request(app.getHttpServer()).patch(`/assets/${asset.id}`).send(updateDto).expect(400);
-        const {body} = res
+      const res: any = await request(app.getHttpServer())
+        .patch(`/assets/${asset.id}`)
+        .send(updateDto)
+        .expect(400);
+      const { body } = res;
     });
 
     it('should throw error when trying to set self as parent', async () => {
@@ -306,20 +390,30 @@ describe('AssetController', () => {
         parentAssetId: asset.id,
       };
 
-        const res: any = await request(app.getHttpServer()).patch(`/assets/${asset.id}`).send(updateDto).expect(400);
-        const {body} = res
+      const res: any = await request(app.getHttpServer())
+        .patch(`/assets/${asset.id}`)
+        .send(updateDto)
+        .expect(400);
+      const { body } = res;
     });
 
     it('should update and return asset with child assets', async () => {
       const parent = await Asset.create({ name: 'Parent', folder: true });
-      const child = await Asset.create({ name: 'Child', folder: true, parentAssetId: parent.id });
+      const child = await Asset.create({
+        name: 'Child',
+        folder: true,
+        parentAssetId: parent.id,
+      });
 
       const updateDto = {
         name: 'Updated Parent',
       };
 
-        const res: any = await request(app.getHttpServer()).patch(`/assets/${parent.id}`).send(updateDto).expect(200);
-        const {body} = res
+      const res: any = await request(app.getHttpServer())
+        .patch(`/assets/${parent.id}`)
+        .send(updateDto)
+        .expect(200);
+      const { body } = res;
 
       expect(body.data.name).toBe('Updated Parent');
       expect(body.data.childAssets).toBeDefined();

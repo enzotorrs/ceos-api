@@ -22,4 +22,3 @@ import { SequelizeModule } from '@nestjs/sequelize';
   ],
 })
 export class DatabaseModule {}
-

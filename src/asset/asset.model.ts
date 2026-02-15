@@ -30,7 +30,7 @@ export class Asset extends Model {
 
   @Column({
     type: DataType.BOOLEAN,
-    defaultValue: false
+    defaultValue: false,
   })
   folder: boolean;
 

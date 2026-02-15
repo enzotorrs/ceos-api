@@ -12,7 +12,7 @@ export class AssetResponseDto {
 
   @ApiProperty()
   parentAssetId: number;
-  
+
   @ApiProperty()
-  uploadUrl?: string
+  uploadUrl?: string;
 }

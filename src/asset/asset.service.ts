@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Asset } from './asset.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateAssetDto } from './dtos/create_asset.dto';
@@ -13,18 +17,19 @@ export class AssetService {
     @InjectModel(Asset)
     private readonly assetRepository: typeof Asset,
     private readonly bucketService: BucketService,
-  ) { }
+  ) {}
 
   async getAll(pagination: PaginationDTO) {
     const { page, page_size } = pagination;
     const limit = page_size;
     const offset = (page - 1) * page_size;
 
-    const { rows: items, count: total } = await this.assetRepository.findAndCountAll({
-      include: ['childAssets', 'parentAsset'],
-      limit,
-      offset,
-    });
+    const { rows: items, count: total } =
+      await this.assetRepository.findAndCountAll({
+        include: ['childAssets', 'parentAsset'],
+        limit,
+        offset,
+      });
 
     return {
       items,
@@ -47,40 +52,57 @@ export class AssetService {
   }
 
   async create(assetPayload: CreateAssetDto): Promise<AssetResponseDto> {
-    await this.validateAsset(assetPayload)
+    await this.validateAsset(assetPayload);
     const asset = await this.assetRepository.create({ ...assetPayload });
     if (assetPayload.folder) {
-      return asset
+      return asset;
     }
     if (!assetPayload.filename) {
-      throw new BadRequestException('asset type file must have filename')
+      throw new BadRequestException('asset type file must have filename');
     }
-    const uploadUrl = await this.bucketService.getSignedUploadUrl(assetPayload.filename)
-    return { ...asset.dataValues, uploadUrl }
+    const uploadUrl = await this.bucketService.getSignedUploadUrl(
+      assetPayload.filename,
+    );
+    return { ...asset.dataValues, uploadUrl };
   }
 
   async update(assetId: number, assetPayload: UpdateAssetDto): Promise<Asset> {
-    await this.validateAsset(assetPayload, assetId)
+    await this.validateAsset(assetPayload, assetId);
     const asset = await this.get(assetId);
     await asset.update(assetPayload);
     return asset.reload({ include: ['childAssets'] });
   }
 
-  private async validateAsset(assetPayload: CreateAssetDto | UpdateAssetDto, assetId?: number) {
+  private async validateAsset(
+    assetPayload: CreateAssetDto | UpdateAssetDto,
+    assetId?: number,
+  ) {
     if (assetPayload.parentAssetId) {
-      const parentAsset = await this.get(assetPayload.parentAssetId)
+      const parentAsset = await this.get(assetPayload.parentAssetId);
       if (parentAsset.dataValues.folder === false) {
-        throw new BadRequestException('parentAsset must be a folder')
+        throw new BadRequestException('parentAsset must be a folder');
       }
     }
-    if (assetId && assetPayload.parentAssetId && assetId === assetPayload.parentAssetId) {
-      throw new BadRequestException('parentAsset cannot be equal to assetId')
+    if (
+      assetId &&
+      assetPayload.parentAssetId &&
+      assetId === assetPayload.parentAssetId
+    ) {
+      throw new BadRequestException('parentAsset cannot be equal to assetId');
     }
-    if ('folder' in assetPayload && assetPayload.folder && assetPayload.filename) {
-      throw new BadRequestException('folder cannot have filename')
+    if (
+      'folder' in assetPayload &&
+      assetPayload.folder &&
+      assetPayload.filename
+    ) {
+      throw new BadRequestException('folder cannot have filename');
     }
-    if ('folder' in assetPayload && !assetPayload.folder && !assetPayload.filename) {
-      throw new BadRequestException('asset type file must have filename')
+    if (
+      'folder' in assetPayload &&
+      !assetPayload.folder &&
+      !assetPayload.filename
+    ) {
+      throw new BadRequestException('asset type file must have filename');
     }
   }
 }

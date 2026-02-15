@@ -7,11 +7,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { BucketModule } from 'src/bucket/bucket.module';
 
 @Module({
-  imports: [
-    SequelizeModule.forFeature([Asset]),
-    AuthModule,
-    BucketModule
-  ],
+  imports: [SequelizeModule.forFeature([Asset]), AuthModule, BucketModule],
   controllers: [AssetController],
   providers: [AssetService],
 })

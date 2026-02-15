@@ -12,14 +12,15 @@ import { Request } from 'express';
 export class AuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
-    private configService: ConfigService
+    private configService: ConfigService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    const authEnabled = this.configService.get('ENABLE_AUTH', 'true') === 'true';
-    if(!authEnabled){
-      console.warn('auth disabled')
-      return true
+    const authEnabled =
+      this.configService.get('ENABLE_AUTH', 'true') === 'true';
+    if (!authEnabled) {
+      console.warn('auth disabled');
+      return true;
     }
 
     const request = context.switchToHttp().getRequest();
@@ -30,7 +31,7 @@ export class AuthGuard implements CanActivate {
     try {
       const payload = await this.jwtService.verifyAsync(token);
       request['user'] = payload;
-    } catch{
+    } catch {
       throw new UnauthorizedException();
     }
     return true;

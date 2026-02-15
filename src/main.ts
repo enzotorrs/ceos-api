@@ -1,5 +1,5 @@
 import { Reflector } from '@nestjs/core';
-import { TransformInterceptor } from "./common/interceptors/transform.interceptor";
+import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import {
