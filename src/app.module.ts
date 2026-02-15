@@ -1,9 +1,9 @@
 import { BucketModule } from './bucket/bucket.module';
 import { Module } from '@nestjs/common';
 import { AssetModule } from './asset/asset.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { SequelizeModule } from '@nestjs/sequelize';
+import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [
@@ -12,21 +12,7 @@ import { AuthModule } from './auth/auth.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    SequelizeModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
-        dialect: 'postgres',
-        host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
-        username: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_DATABASE'),
-        autoLoadModels: true,
-        synchronize: false,
-        logging: console.log,
-      }),
-      inject: [ConfigService],
-    }),
+    DatabaseModule,
     AssetModule,
     AuthModule,
   ],
