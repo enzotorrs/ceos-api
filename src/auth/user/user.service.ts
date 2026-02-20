@@ -36,4 +36,19 @@ export class UserService {
     const { password, ...result } = user.get({ plain: true });
     return result;
   }
+
+  async saveRefreshToken(username: string, token: string): Promise<void> {
+    const hashed = await bcrypt.hash(token, 10);
+    await this.userRepository.update(
+      { refreshToken: hashed },
+      { where: { username } },
+    );
+  }
+
+  async clearRefreshToken(username: string): Promise<void> {
+    await this.userRepository.update(
+      { refreshToken: null },
+      { where: { username } },
+    );
+  }
 }

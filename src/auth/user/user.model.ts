@@ -19,4 +19,11 @@ export class User extends Model {
     allowNull: false,
   })
   password: string;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+    field: 'refresh_token',
+  })
+  refreshToken: string | null;
 }
