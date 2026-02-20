@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -31,7 +32,7 @@ export class AssetController {
   }
 
   @Get(':id')
-  @ApiPaginatedResponse(Asset)
+  @ApiDataResponse(Asset)
   async get(@Param('id') id: number) {
     return this.assetService.get(id);
   }
@@ -49,5 +50,12 @@ export class AssetController {
     @Body() assetPayload: UpdateAssetDto,
   ) {
     return this.assetService.update(assetId, assetPayload);
+  }
+
+  @Delete(':id')
+  async delete(
+    @Param('id') assetId: number,
+  ){
+    return this.assetService.delete(assetId)
   }
 }

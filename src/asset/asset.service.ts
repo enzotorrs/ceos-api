@@ -77,6 +77,11 @@ export class AssetService {
     return asset.reload({ include: ['childAssets'] });
   }
 
+  async delete(assetId: number){
+    const asset = await this.get(assetId)
+    asset.destroy()
+  }
+
   private async validateAsset(
     assetPayload: CreateAssetDto | UpdateAssetDto,
     assetId?: number,
