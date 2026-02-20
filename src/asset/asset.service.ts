@@ -7,9 +7,9 @@ import { Asset } from './asset.model';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateAssetDto } from './dtos/create_asset.dto';
 import { UpdateAssetDto } from './dtos/update_asset.dto';
-import { PaginationDTO } from 'src/common/dtos/pagination.dto';
 import { MediaService } from 'src/media/media.service';
 import { AssetResponseDto } from './dtos/asset_response.dto';
+import { AssetQueryDTO } from './dtos/asset_query.dto';
 
 @Injectable()
 export class AssetService {
@@ -19,14 +19,18 @@ export class AssetService {
     private readonly mediaService: MediaService,
   ) {}
 
-  async getAll(pagination: PaginationDTO) {
-    const { page, page_size } = pagination;
+  async getAll(query: AssetQueryDTO) {
+    const { page, page_size, parentAssetId } = query;
     const limit = page_size;
     const offset = (page - 1) * page_size;
 
+    const where = parentAssetId !== undefined ? { parentAssetId } : {parentAssetId: null};
+
     const { rows: items, count: total } =
       await this.assetRepository.findAndCountAll({
+        where,
         include: ['childAssets', 'parentAsset'],
+        order: [['id', 'desc']],
         limit,
         offset,
       });

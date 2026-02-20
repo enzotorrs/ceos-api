@@ -15,9 +15,9 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { Asset } from './asset.model';
 import { ApiDataResponse } from 'src/common/decorators/api-data-response.decorator';
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
-import { PaginationDTO } from 'src/common/dtos/pagination.dto';
 import { AssetResponseDto } from './dtos/asset_response.dto';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { AssetQueryDTO } from './dtos/asset_query.dto';
 
 @UseGuards(AuthGuard)
 @ApiBearerAuth()
@@ -26,8 +26,14 @@ export class AssetController {
   constructor(private readonly assetService: AssetService) {}
   @Get()
   @ApiPaginatedResponse(Asset)
-  async getAll(@Query() pagination: PaginationDTO) {
+  async getAll(@Query() pagination: AssetQueryDTO) {
     return this.assetService.getAll(pagination);
+  }
+
+  @Get(':id')
+  @ApiPaginatedResponse(Asset)
+  async get(@Param('id') id: number) {
+    return this.assetService.get(id);
   }
 
   @Post()
