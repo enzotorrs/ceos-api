@@ -2,8 +2,6 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
-  HttpStatus,
   Param,
   Patch,
   Post,
@@ -19,9 +17,11 @@ import { ApiDataResponse } from 'src/common/decorators/api-data-response.decorat
 import { ApiPaginatedResponse } from 'src/common/decorators/api-paginated-response.decorator';
 import { PaginationDTO } from 'src/common/dtos/pagination.dto';
 import { AssetResponseDto } from './dtos/asset_response.dto';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @UseGuards(AuthGuard)
-@Controller('assets')
+@ApiBearerAuth()
+@Controller('asset')
 export class AssetController {
   constructor(private readonly assetService: AssetService) {}
   @Get()
