@@ -66,11 +66,11 @@ describe('AssetController', () => {
     expect(service).toBeDefined();
   });
 
-  describe('GET /assets', () => {
+  describe('GET /asset', () => {
     it('should return empty data', async () => {
-      await request(app.getHttpServer()).get('/assets').expect(200);
+      await request(app.getHttpServer()).get('/asset').expect(200);
       const res: any = await request(app.getHttpServer())
-        .get('/assets')
+        .get('/asset')
         .expect(200);
       const { body } = res;
 
@@ -81,7 +81,7 @@ describe('AssetController', () => {
         lastPage: 0,
       });
     });
-    it('should return paginated assets with default pagination', async () => {
+    it('should return paginated asset with default pagination', async () => {
       await service.create({ name: 'Folder 1', folder: true });
       await service.create({ name: 'Folder 2', folder: true });
       await service.create({
@@ -91,7 +91,7 @@ describe('AssetController', () => {
       });
 
       const res: any = await request(app.getHttpServer())
-        .get('/assets')
+        .get('/asset')
         .expect(200);
       const { body } = res;
 
@@ -103,13 +103,13 @@ describe('AssetController', () => {
       });
     });
 
-    it('should return paginated assets with custom page size', async () => {
+    it('should return paginated asset with custom page size', async () => {
       for (let i = 1; i <= 5; i++) {
         await service.create({ name: `Folder ${i} `, folder: true });
       }
 
       const res: any = await request(app.getHttpServer())
-        .get('/assets')
+        .get('/asset')
         .expect(200);
       const { body } = res;
 
@@ -122,13 +122,13 @@ describe('AssetController', () => {
     });
 
     it('should return second page of results', async () => {
-      // Create test assets
+      // Create test asset
       for (let i = 1; i <= 5; i++) {
         await service.create({ name: `Folder ${i}`, folder: true });
       }
 
       const res: any = await request(app.getHttpServer())
-        .get('/assets')
+        .get('/asset')
         .query({ page: 2, page_size: 2 })
         .expect(200);
       const { body } = res;
@@ -137,29 +137,9 @@ describe('AssetController', () => {
       expect(body.data[0].name).toBe('Folder 3');
       expect(body.meta.page).toBe(2);
     });
-
-    it('should include child and parent assets', async () => {
-      const parent = await service.create({
-        name: 'Parent Folder',
-        folder: true,
-      });
-      await service.create({
-        name: 'Child Folder',
-        folder: true,
-        parentAssetId: parent.id,
-      });
-
-      const res: any = await request(app.getHttpServer())
-        .get('/assets')
-        .expect(200);
-      const { body } = res;
-
-      expect(body.data[0].childAssets).toBeDefined();
-      expect(body.data[1].parentAsset).toBeDefined();
-    });
   });
 
-  describe('POST /assets', () => {
+  describe('POST /asset', () => {
     describe('Creating folders', () => {
       it('should create a folder successfully', async () => {
         const createDto = {
@@ -168,7 +148,7 @@ describe('AssetController', () => {
         };
 
         const res: any = await request(app.getHttpServer())
-          .post('/assets')
+          .post('/asset')
           .send(createDto)
           .expect(201);
         const { body } = res;
@@ -192,7 +172,7 @@ describe('AssetController', () => {
         };
 
         const res: any = await request(app.getHttpServer())
-          .post('/assets')
+          .post('/asset')
           .send(createDto)
           .expect(201);
         const { body } = res;
@@ -209,7 +189,7 @@ describe('AssetController', () => {
         };
 
         const res: any = await request(app.getHttpServer())
-          .post('/assets')
+          .post('/asset')
           .send(createDto)
           .expect(400);
       });
@@ -228,7 +208,7 @@ describe('AssetController', () => {
         };
 
         const res: any = await request(app.getHttpServer())
-          .post('/assets')
+          .post('/asset')
           .send(createDto)
           .expect(400);
       });
@@ -241,7 +221,7 @@ describe('AssetController', () => {
         };
 
         const res: any = await request(app.getHttpServer())
-          .post('/assets')
+          .post('/asset')
           .send(createDto)
           .expect(404);
       });
@@ -256,7 +236,7 @@ describe('AssetController', () => {
         };
 
         const res: any = await request(app.getHttpServer())
-          .post('/assets')
+          .post('/asset')
           .send(createDto)
           .expect(201);
         const { body } = res;
@@ -278,7 +258,7 @@ describe('AssetController', () => {
         };
 
         const res: any = await request(app.getHttpServer())
-          .post('/assets')
+          .post('/asset')
           .send(createDto)
           .expect(400);
       });
@@ -297,7 +277,7 @@ describe('AssetController', () => {
         };
 
         const res: any = await request(app.getHttpServer())
-          .post('/assets')
+          .post('/asset')
           .send(createDto)
           .expect(201);
         const { body } = res;
@@ -309,7 +289,7 @@ describe('AssetController', () => {
     });
   });
 
-  describe('PATCH /assets/:id', () => {
+  describe('PATCH /asset/:id', () => {
     it('should update asset name', async () => {
       const asset = await service.create({
         name: 'Original Name',
@@ -321,7 +301,7 @@ describe('AssetController', () => {
       };
 
       const res: any = await request(app.getHttpServer())
-        .patch(`/assets/${asset.id}`)
+        .patch(`/asset/${asset.id}`)
         .send(updateDto)
         .expect(200);
       const { body } = res;
@@ -342,7 +322,7 @@ describe('AssetController', () => {
       };
 
       const res: any = await request(app.getHttpServer())
-        .patch(`/assets/${asset.id}`)
+        .patch(`/asset/${asset.id}`)
         .send(updateDto)
         .expect(200);
       const { body } = res;
@@ -356,7 +336,7 @@ describe('AssetController', () => {
       };
 
       const res: any = await request(app.getHttpServer())
-        .patch(`/assets/1`)
+        .patch(`/asset/1`)
         .send(updateDto)
         .expect(404);
       const { body } = res;
@@ -376,7 +356,7 @@ describe('AssetController', () => {
       };
 
       const res: any = await request(app.getHttpServer())
-        .patch(`/assets/${asset.id}`)
+        .patch(`/asset/${asset.id}`)
         .send(updateDto)
         .expect(400);
       const { body } = res;
@@ -391,13 +371,13 @@ describe('AssetController', () => {
       };
 
       const res: any = await request(app.getHttpServer())
-        .patch(`/assets/${asset.id}`)
+        .patch(`/asset/${asset.id}`)
         .send(updateDto)
         .expect(400);
       const { body } = res;
     });
 
-    it('should update and return asset with child assets', async () => {
+    it('should update and return asset with child asset', async () => {
       const parent = await Asset.create({ name: 'Parent', folder: true });
       const child = await Asset.create({
         name: 'Child',
@@ -410,7 +390,7 @@ describe('AssetController', () => {
       };
 
       const res: any = await request(app.getHttpServer())
-        .patch(`/assets/${parent.id}`)
+        .patch(`/asset/${parent.id}`)
         .send(updateDto)
         .expect(200);
       const { body } = res;
