@@ -11,7 +11,6 @@ import { AuthService } from './auth.service';
 import { LoginDTO } from './dtos/login.dto';
 import { LoginResponseDTO } from './dtos/login_response.dto';
 import { RefreshTokenDTO } from './dtos/refresh_token.dto';
-import { ApiDataResponse } from 'src/common/decorators/api-data-response.decorator';
 import { IgnoreTransform } from 'src/common/decorators/ignore-transform.decorator';
 import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
 import { AuthGuard } from './auth.guard';
