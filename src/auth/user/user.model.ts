@@ -26,4 +26,11 @@ export class User extends Model {
     field: 'refresh_token',
   })
   refreshToken: string | null;
+
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+    field: 'avatar_filename',
+  })
+  avatarFilename: string | null;
 }

@@ -4,12 +4,14 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { CreateUserDTO } from './dtos/create_user.dto';
 import * as bcrypt from 'bcrypt';
 import { UserResponseDTO } from './dtos/user_response.dto';
+import { MediaService } from 'src/media/media.service';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User)
     private readonly userRepository: typeof User,
+    private readonly mediaService: MediaService,
   ) {}
 
   async findOne(username: string): Promise<User> {
@@ -46,6 +48,25 @@ export class UserService {
     });
     const { password, ...result } = user.get({ plain: true });
     return result;
+  }
+
+  async getMe(username: string): Promise<UserResponseDTO> {
+    const user = await this.findOne(username);
+    let avatarUrl: string | null = null;
+    if (user.avatarFilename) {
+      avatarUrl = await this.mediaService.getSignedDownloadUrl(user.avatarFilename);
+    }
+    return { username: user.username, avatarUrl };
+  }
+
+  async getAvatarUploadUrl(username: string): Promise<{ uploadUrl: string }> {
+    const key = `avatars/${username}`;
+    await this.userRepository.update(
+      { avatarFilename: key },
+      { where: { username } },
+    );
+    const uploadUrl = await this.mediaService.getSignedUploadUrl(key);
+    return { uploadUrl };
   }
 
   async saveRefreshToken(username: string, token: string): Promise<void> {
