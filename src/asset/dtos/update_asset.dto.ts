@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsOptional } from 'class-validator';
+import { IsIn, IsNumber, IsOptional } from 'class-validator';
 
 export class UpdateAssetDto {
   @ApiProperty()
@@ -10,4 +10,9 @@ export class UpdateAssetDto {
   @IsNumber()
   @IsOptional()
   parentAssetId?: number;
+
+  @ApiProperty({ enum: ['uploading', 'success'] })
+  @IsIn(['uploading', 'success'])
+  @IsOptional()
+  status?: 'uploading' | 'success';
 }

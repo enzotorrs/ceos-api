@@ -62,4 +62,11 @@ export class Asset extends Model {
 
   @BelongsTo(() => User)
   user: User;
+
+  @ApiProperty()
+  @Column({
+    type: DataType.STRING,
+    allowNull: true,
+  })
+  status: 'uploading' | 'success' | null;
 }

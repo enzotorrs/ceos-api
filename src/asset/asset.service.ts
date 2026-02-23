@@ -60,7 +60,8 @@ export class AssetService {
 
   async create(assetPayload: CreateAssetDto, userId: number): Promise<AssetResponseDto> {
     await this.validateAsset(assetPayload);
-    const asset = await this.assetRepository.create({ ...assetPayload, userId });
+    const status = assetPayload.folder ? null : 'uploading';
+    const asset = await this.assetRepository.create({ ...assetPayload, userId, status });
     if (assetPayload.folder) {
       return asset;
     }
