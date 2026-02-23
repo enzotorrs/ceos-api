@@ -47,7 +47,10 @@ export class AssetService {
 
   async get(assetId: number): Promise<Asset> {
     const asset = await this.assetRepository.findByPk(assetId, {
-      include: ['childAssets'],
+      include: [
+        'childAssets',
+        { association: 'user', attributes: ['id', 'username', 'avatarFilename'] },
+      ],
     });
     if (!asset) {
       throw new NotFoundException('asset not found');
@@ -55,9 +58,9 @@ export class AssetService {
     return asset;
   }
 
-  async create(assetPayload: CreateAssetDto): Promise<AssetResponseDto> {
+  async create(assetPayload: CreateAssetDto, userId: number): Promise<AssetResponseDto> {
     await this.validateAsset(assetPayload);
-    const asset = await this.assetRepository.create({ ...assetPayload });
+    const asset = await this.assetRepository.create({ ...assetPayload, userId });
     if (assetPayload.folder) {
       return asset;
     }

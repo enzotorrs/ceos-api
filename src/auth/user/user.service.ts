@@ -60,7 +60,7 @@ export class UserService {
   }
 
   async getAvatarUploadUrl(username: string): Promise<{ uploadUrl: string }> {
-    const key = `avatars/${username}`;
+    const key = `${username}`;
     await this.userRepository.update(
       { avatarFilename: key },
       { where: { username } },

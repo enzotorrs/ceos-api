@@ -8,6 +8,7 @@ import {
   Model,
   Table,
 } from 'sequelize-typescript';
+import { User } from 'src/auth/user/user.model';
 
 @Table({
   tableName: 'asset',
@@ -49,4 +50,16 @@ export class Asset extends Model {
   @ApiProperty()
   @HasMany(() => Asset, { as: 'childAssets' })
   childAssets: Asset[];
+
+  @ApiProperty()
+  @ForeignKey(() => User)
+  @Column({
+    type: DataType.INTEGER,
+    allowNull: true,
+    field: 'user_id',
+  })
+  userId: number;
+
+  @BelongsTo(() => User)
+  user: User;
 }

@@ -23,13 +23,13 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const tokens = await this.generateTokens(username);
+    const tokens = await this.generateTokens(user.id, username);
     await this.userService.saveRefreshToken(username, tokens.refreshToken);
     return tokens;
   }
 
   async refresh(token: string): Promise<LoginResponseDTO> {
-    let payload: { username: string };
+    let payload: { sub: number; username: string };
     try {
       payload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('JWT_REFRESH_SECRET'),
@@ -49,17 +49,18 @@ export class AuthService {
       throw new UnauthorizedException();
     }
 
-    const tokens = await this.generateTokens(payload.username);
+    const tokens = await this.generateTokens(user.id, payload.username);
     await this.userService.saveRefreshToken(payload.username, tokens.refreshToken);
     return tokens;
   }
+
   async signup(payload: CreateUserDTO){
     const user_exists = await this.userService.username_exists(payload.username);
     if (user_exists){
       throw new BadRequestException('user with this username already exists')
     }
     const user = await this.userService.create(payload)
-    const tokens = await this.generateTokens(user.username)
+    const tokens = await this.generateTokens((user as any).id, user.username)
     await this.userService.saveRefreshToken(user.username, tokens.refreshToken)
     return tokens
   }
@@ -68,8 +69,8 @@ export class AuthService {
     await this.userService.clearRefreshToken(username);
   }
 
-  private async generateTokens(username: string): Promise<LoginResponseDTO> {
-    const jwtPayload = { username };
+  private async generateTokens(userId: number, username: string): Promise<LoginResponseDTO> {
+    const jwtPayload = { sub: userId, username };
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(jwtPayload),

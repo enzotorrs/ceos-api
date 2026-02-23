@@ -7,6 +7,7 @@ import {
   Patch,
   Post,
   Query,
+  Request,
   UseGuards,
 } from '@nestjs/common';
 import { AssetService } from './asset.service';
@@ -39,8 +40,8 @@ export class AssetController {
 
   @Post()
   @ApiDataResponse(AssetResponseDto)
-  async create(@Body() assetPayload: CreateAssetDto) {
-    return this.assetService.create(assetPayload);
+  async create(@Body() assetPayload: CreateAssetDto, @Request() req) {
+    return this.assetService.create(assetPayload, req.user.sub);
   }
 
   @Patch(':id')
