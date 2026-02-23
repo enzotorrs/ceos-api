@@ -27,6 +27,17 @@ export class UserService {
     return user;
   }
 
+  async username_exists(username: string): Promise<boolean> {
+    const user = await this.userRepository.findOne({
+      where: {
+        username,
+      },
+      raw: true,
+    });
+
+    return !!user;
+  }
+
   async create(userPayload: CreateUserDTO): Promise<UserResponseDTO> {
     const passwordHashed = await bcrypt.hash(userPayload.password, 10);
     const user = await this.userRepository.create({
