@@ -14,6 +14,7 @@ import { RefreshTokenDTO } from './dtos/refresh_token.dto';
 import { IgnoreTransform } from 'src/common/decorators/ignore-transform.decorator';
 import { ApiBearerAuth, ApiOkResponse } from '@nestjs/swagger';
 import { AuthGuard } from './auth.guard';
+import { CreateUserDTO } from './user/dtos/create_user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -33,6 +34,14 @@ export class AuthController {
   @IgnoreTransform()
   async refresh(@Body() body: RefreshTokenDTO): Promise<LoginResponseDTO> {
     return this.authService.refresh(body.refreshToken);
+  }
+
+  @Post('signup')
+  @ApiOkResponse({ type: LoginResponseDTO })
+  @HttpCode(HttpStatus.OK)
+  @IgnoreTransform()
+  async signup(@Body() body: CreateUserDTO){
+    return this.authService.signup(body)
   }
 
   @Post('logout')

@@ -1,9 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { UserService } from './user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as bcrypt from 'bcrypt';
 import { LoginResponseDTO } from './dtos/login_response.dto';
+import { CreateUserDTO } from './user/dtos/create_user.dto';
 
 @Injectable()
 export class AuthService {
@@ -51,6 +52,16 @@ export class AuthService {
     const tokens = await this.generateTokens(payload.username);
     await this.userService.saveRefreshToken(payload.username, tokens.refreshToken);
     return tokens;
+  }
+  async signup(payload: CreateUserDTO){
+    const user_exists = await this.userService.username_exists(payload.username);
+    if (user_exists){
+      throw new BadRequestException('user with this username already exists')
+    }
+    const user = await this.userService.create(payload)
+    const tokens = await this.generateTokens(user.username)
+    await this.userService.saveRefreshToken(user.username, tokens.refreshToken)
+    return tokens
   }
 
   async logout(username: string): Promise<void> {
