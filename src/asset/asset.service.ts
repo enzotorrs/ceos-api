@@ -68,10 +68,8 @@ export class AssetService {
     if (!assetPayload.filename) {
       throw new BadRequestException('asset type file must have filename');
     }
-    const uploadUrl = await this.mediaService.getSignedUploadUrl(
-      assetPayload.filename,
-    );
-    return { ...asset.dataValues, uploadUrl };
+    const { uploadId, key } = await this.mediaService.createMultipartUpload(assetPayload.filename);
+    return { ...asset.dataValues, uploadId, key };
   }
 
   async update(assetId: number, assetPayload: UpdateAssetDto): Promise<Asset> {
