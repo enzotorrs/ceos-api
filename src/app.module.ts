@@ -1,6 +1,7 @@
 import { MediaModule } from './media/media.module';
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AssetModule } from './asset/asset.module';
+import { CommentModule } from './comment/comment.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
@@ -15,6 +16,7 @@ import { LoggerMiddleware } from './common/middlewares/logger.middleware';
     }),
     DatabaseModule,
     AssetModule,
+    CommentModule,
     AuthModule,
   ],
   controllers: [],
