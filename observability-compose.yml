@@ -1,0 +1,14 @@
+services:
+  otel-lgtm:
+    image: grafana/otel-lgtm:0.8.1
+    ports:
+      - "3030:3000"   # Grafana
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    volumes:
+      - ./observability/otel-collector-config.yaml:/otel-lgtm/otelcol-config.yaml
+      - ./observability/grafana/ceos.yaml:/otel-lgtm/grafana/conf/provisioning/dashboards/ceos.yaml
+      - ./observability/grafana/ceos-api.json:/otel-lgtm/grafana/conf/provisioning/dashboards/ceos-api.json
+      - otel_lgtm_data:/data
+volumes:
+  otel_lgtm_data:

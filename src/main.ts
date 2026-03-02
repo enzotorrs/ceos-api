@@ -1,3 +1,4 @@
+import './tracing';
 import { Reflector } from '@nestjs/core';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { NestFactory } from '@nestjs/core';

@@ -10,9 +10,12 @@ services:
       - .env
     environment:
       DB_HOST: postgres
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-lgtm:4318
     depends_on:
       postgres:
         condition: service_healthy
+      otel-lgtm:
+        condition: service_started
     networks:
       - ceos-network
 
@@ -35,8 +38,23 @@ services:
       retries: 5
       start_period: 10s
 
+  otel-lgtm:
+    image: grafana/otel-lgtm:0.8.1
+    ports:
+      - "3030:3000"   # Grafana
+      - "4317:4317"   # OTLP gRPC
+      - "4318:4318"   # OTLP HTTP
+    volumes:
+      - ./observability/otel-collector-config.yaml:/otel-lgtm/otelcol-config.yaml
+      - ./observability/grafana/ceos.yaml:/otel-lgtm/grafana/conf/provisioning/dashboards/ceos.yaml
+      - ./observability/grafana/ceos-api.json:/otel-lgtm/grafana/conf/provisioning/dashboards/ceos-api.json
+      - otel_lgtm_data:/data
+    networks:
+      - ceos-network
+
 networks:
   ceos-network:
 
 volumes:
   postgres_data:
+  otel_lgtm_data:
