@@ -6,6 +6,7 @@ import { ATTR_SERVICE_NAME, ATTR_SERVICE_VERSION } from '@opentelemetry/semantic
 
 const exporterUrl =
   process.env.OTEL_EXPORTER_OTLP_ENDPOINT ?? 'http://otel-collector:4318'
+console.debug('exportUrl: '+exporterUrl)
 
 const sdk = new NodeSDK({
   resource: resourceFromAttributes({
